@@ -1,0 +1,28 @@
+// users/{uid}/records/{id}: one editable scalar per document.
+// path: JSON array string (1..300 chars), immutable; value: JSON scalar string
+// (<=1000 chars); deleted: tombstone bool; updatedAt: server timestamp.
+// No global profiles, roles or credentials are stored. Each UID owns its records.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+    function isValidRecord(data) {
+      return data.keys().hasAll(['path','value','deleted','updatedAt'])
+        && data.keys().hasOnly(['path','value','deleted','updatedAt'])
+        && data.path is string && data.path.size() > 0 && data.path.size() <= 300
+        && data.value is string && data.value.size() <= 1000
+        && data.deleted is bool
+        && data.updatedAt is timestamp && data.updatedAt == request.time;
+    }
+    match /users/{uid}/records/{recordId} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid) && isValidRecord(request.resource.data);
+      allow update: if isOwner(uid) && isValidRecord(request.resource.data)
+        && request.resource.data.path == resource.data.path;
+      allow delete: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
