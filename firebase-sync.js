@@ -8,7 +8,10 @@ let room=null,userId=null,unsubscribe=null,ready=false,baseline={},pending={},ti
 const invite=new URLSearchParams(location.hash.slice(1)).get('espace');
 try{room=invite||localStorage.getItem('natif_shared_room');}catch{room=invite;}
 if(!/^[A-Za-z0-9_-]{32}$/.test(room||''))room=null;
-if(room)try{localStorage.setItem('natif_shared_room',room);}catch{}
+if(room)try{
+ localStorage.setItem('natif_shared_room',room);
+ if(invite&&localStorage.getItem('natif_shared_room')===room)history.replaceState(null,'',location.pathname+location.search);
+}catch{}
 const queueKey=()=>`natif_shared_pending:${room}`,migrationKey=()=>`natif_shared_migrated:${room}`;
 function message(text){status.textContent=text;}
 function persistQueue(){if(room)try{localStorage.setItem(queueKey(),JSON.stringify(pending));}catch{message('Stockage local indisponible : exportez un JSON avant de fermer la page.');}}
@@ -79,9 +82,11 @@ migrate.addEventListener('click',()=>{
  if(!confirm('Ajouter les anciennes données de cet appareil aux carnets partagés ? Les valeurs déjà présentes dans Firebase seront conservées.'))return;
  legacy={...legacy,...core.flatten(app.getLegacy())};const data=app.getData();const count=mergeLegacy(data);app.setData(data);collect();message(`${count} valeurs récupérées. Synchronisation en cours…`);
 });
-share.addEventListener('click',async()=>{const link=location.origin+location.pathname+'#espace='+room;try{await navigator.clipboard.writeText(link);message('Lien privé copié : transmettez-le à l’autre utilisateur.');}catch{window.prompt('Copiez ce lien privé pour l’autre utilisateur :',link);}});
+share.addEventListener('click',async()=>{if(!room){window.alert('Ouvrez le lien privé une première fois sur cet appareil pour rejoindre les carnets partagés.');return;}const link=location.origin+location.pathname+'#espace='+room;try{await navigator.clipboard.writeText(link);message('Lien privé copié : transmettez-le à l’autre utilisateur.');toast('Lien de partage copié.');}catch{window.prompt('Copiez ce lien privé pour l’autre utilisateur :',link);}});
 onAuthStateChanged(auth,user=>{if(!room)return;if(user)start(user);else initialize();});
 window.addEventListener('online',()=>{if(ready)flush();else if(userId)subscribe();else initialize();});
 window.addEventListener('offline',()=>message(room?'Hors connexion : modifications sur cet appareil, en attente de synchronisation.':'Mode local hors connexion.'));
 window.addEventListener('pagehide',persistQueue);
 if(!room)message('Ouvrez le lien privé de votre espace partagé pour retrouver les données de Thomas et Pierre.');
+
+document.addEventListener('click',event=>{if(event.target.closest('[data-share-space]'))share.click();});
