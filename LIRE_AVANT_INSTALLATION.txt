@@ -1,0 +1,38 @@
+NATIF BODY - Carnet de performances évolutif
+
+VERSION
+Site autonome, sans base de données ni bibliothèque externe.
+Deux profils : Thomas et Pierre.
+Démarre à 12 semaines, puis permet d'ajouter des semaines individuellement par profil.
+
+MISE EN LIGNE
+1. Décompresser le ZIP.
+2. Transférer le contenu du dossier, avec index.html à la racine de votre site.
+3. Ouvrir l'adresse HTTPS fournie par l'hébergeur depuis un navigateur.
+4. Sur iPhone, vous pouvez utiliser Safari > Partager > Sur l'écran d'accueil.
+
+IMPORTANT : un fichier HTML ouvert dans ChatGPT n'est pas automatiquement
+un site hébergé. Il doit être lancé dans un navigateur, de préférence en HTTPS.
+
+UTILISATION
+- Dans Thomas ou Pierre, choisissez une semaine et une séance.
+- Tapez vos charges et répétitions, elles sont sauvegardées sur cet appareil.
+- Touchez « + Ajouter une semaine » pour continuer après S12.
+- Le nombre de semaines peut différer entre Thomas et Pierre.
+- Dans Performances, choisissez le sportif puis « Exporter le bilan complet en PDF ».
+- Le PDF contient le récapitulatif et l'évolution hebdomadaire de TOUS ses exercices.
+- Le téléchargement du PDF est produit localement, sans service externe.
+- Un export JSON est disponible pour sauvegarder ou transférer toutes les séries.
+
+LIMITES
+- Les données sont stockées dans le navigateur de l'appareil utilisé.
+- Aucune synchronisation automatique entre téléphones.
+- L'export PDF retient la meilleure 1RM estimée de chaque semaine par exercice.
+  Pour récupérer TOUTES les séries (charges/reps), conservez aussi l'export JSON.
+- Les chiffres de 1RM sont des estimations calculées, pas des tests réels.
+- La suppression des semaines n'est pas proposée, pour éviter des pertes de données.
+
+MISE À JOUR DEPUIS LA PRÉCÉDENTE VERSION
+L'identifiant de sauvegarde locale reste le même si vous publiez à la même adresse.
+Si le domaine change, exportez d'abord les données en JSON puis importez-les
+sur le nouveau site (Programme > Sauvegarde et transfert).
