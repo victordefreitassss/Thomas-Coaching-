@@ -23,6 +23,18 @@ service cloud.firestore {
         && request.resource.data.path == resource.data.path;
       allow delete: if false;
     }
+    // The random 192-bit room ID is a private invitation capability.
+    // No root-room listing is allowed; users need the same private link.
+    match /rooms/{roomId}/records/{recordId} {
+      allow read: if request.auth != null
+        && roomId.matches('^[A-Za-z0-9_-]{32}$');
+      allow create: if request.auth != null
+        && roomId.matches('^[A-Za-z0-9_-]{32}$') && isValidRecord(request.resource.data);
+      allow update: if request.auth != null
+        && roomId.matches('^[A-Za-z0-9_-]{32}$') && isValidRecord(request.resource.data)
+        && request.resource.data.path == resource.data.path;
+      allow delete: if false;
+    }
     match /{document=**} { allow read, write: if false; }
   }
 }

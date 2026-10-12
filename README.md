@@ -1,25 +1,20 @@
-# NATIF BODY — Carnet de performances
+# NATIF BODY — Carnets partagés
 
-Site statique déployé sur Vercel ; les fichiers doivent être à la racine du dépôt.
+Site statique sur Vercel : Framework Other, aucun build, sortie `.`.
+Production : https://thomascoaching.vercel.app
 
-## Hébergement
+## Utilisation
 
-Vercel : Framework Other, aucun build, sortie `.` (voir vercel.json).
-Domaine de production : https://thomascoaching.vercel.app
+Les deux personnes ouvrent le même lien privé d’espace. Aucun compte Google ni formulaire de connexion n’est requis. Firebase identifie automatiquement chaque navigateur par une session anonyme. Le lien et l’espace sont mémorisés sur l’appareil. Les carnets Thomas et Pierre sont visibles et modifiables par les deux utilisateurs.
 
-## Sauvegarde Firebase
+Le bouton « Copier le lien privé » permet de transmettre le même espace à l’autre utilisateur. Toute personne possédant ce lien peut lire et modifier ses carnets. Le lien contient un identifiant aléatoire de 192 bits, qui n’est ni inclus dans les sources ni publié dans ce dépôt. Un autre espace possède une autre URL et ses propres données.
 
-Projet : `natif-body-coaching`, Firestore Standard à Paris (`europe-west9`), forfait Spark.
-Connexion Google : chaque compte conserve ses propres carnets Thomas/Pierre. Reconnectez-vous au même compte pour retrouver les données sur un autre appareil. Il n’y a pas encore de partage coach/adhérents entre comptes différents.
+## Firebase
 
-Les modifications sont enregistrées localement et placées dans une file persistante lors des coupures réseau. La synchronisation utilise un document par valeur éditable pour éviter qu’une modification de charge écrase les répétitions saisies sur un autre appareil. Si la même valeur est modifiée simultanément, la dernière écriture confirmée par Firebase gagne.
+Projet `natif-body-coaching`, Firestore Standard à Paris (`europe-west9`), forfait Spark. Auth anonyme activée. Les données partagées se trouvent dans `rooms/{identifiant-prive}/records/{recordId}`. La liste des espaces est interdite. Les règles vérifient l’identification automatique, le format de l’identifiant et le schéma des documents. Les accès précédents `users/{uid}/records` restent limités au propriétaire pour conserver les anciennes données privées.
 
-Les anciennes données du navigateur ne sont pas envoyées automatiquement au compte. Après connexion, cliquez sur « Récupérer les anciennes données de cet appareil » pour ajouter les valeurs manquantes. Les valeurs déjà présentes en ligne sont conservées. L’import JSON est disponible et remplace les données du compte après confirmation.
+Ces règles initiales utilisent la possession d’un lien privé comme autorisation. Elles ne limitent pas l’espace à exactement deux appareils : une personne peut ouvrir le lien sur plusieurs appareils. Elles doivent être revues avant une diffusion large. Pour révoquer un lien, une migration vers un nouvel espace privé est nécessaire.
 
-Les règles `firestore.rules` refusent tous les accès hors du UID propriétaire et valident les champs des écritures. Ce sont des règles initiales, à revoir avant une diffusion large. Aucun accès public aux performances. Aucun secret administrateur dans le site : la configuration SDK Firebase est publique par conception.
+Les anciennes valeurs locales manquantes sont récupérées automatiquement une fois par appareil/espace, sans remplacer les valeurs en ligne. Les anciennes données d’un éventuel compte Google déjà connecté sont également récupérées. Les suppressions logiques en ligne sont conservées, sans résurrection d’anciennes données locales. Le bouton de récupération permet une nouvelle tentative manuelle.
 
-La sauvegarde cloud est une conservation synchronisée, pas une sauvegarde historique. Gardez des exports JSON réguliers. Les sauvegardes planifiées natives ne sont pas activées sur Spark.
-
-## Vérification
-
-Vérification syntaxique du JavaScript, démarrage/onglets/sauvegarde locale, tests de synchronisation avec SDK simulé (reconnexion, file hors connexion et isolation UID). Le simulateur Firestore vérifie les règles de lecture. La publication de règles dans Firebase valide leur syntaxe.
+Les modifications sont conservées localement et dans une file persistante hors connexion. La dernière écriture Firebase gagne si la même valeur est modifiée simultanément. Des modifications de champs différents ne s’écrasent pas. L’import JSON remplace les carnets de cet espace après confirmation ; conservez des exports réguliers. La conservation synchronisée n’est pas une sauvegarde historique.
