@@ -22,3 +22,16 @@ Les modifications sont conservées localement et dans une file persistante hors 
 ## Adresse simple
 
 Après la première ouverture du lien privé, l’identifiant de l’espace est conservé sur l’appareil et retiré de la barre d’adresse. Le lien de base suffit ensuite sur cet appareil. Sur un nouvel appareil ou après effacement des données du navigateur, ouvrir une fois le lien de partage. Il peut être recopié depuis Programme > Sauvegarde et transfert > Partager l’accès. Le bandeau technique Firebase n’est plus affiché. Aucun identifiant d’espace privé n’est ajouté aux sources publiques.
+
+
+## Installation iPhone et synchronisation
+
+L’URL privée durable `/app/<identifiant espace>` détermine l’espace partagé. Le manifeste généré par `/api/manifest` utilise cette adresse comme `start_url` ; aucun identifiant privé n’est intégré au dépôt. L’installation iOS peut avoir un stockage séparé et une nouvelle identité anonyme, sans changer le chemin Firestore `rooms/<espace>/records`. Les anciennes invitations `#espace=` restent compatibles.
+
+Un ancien raccourci installé depuis `/` doit être associé une fois : coller le lien obtenu via « Partager l’accès » dans « Retrouver mes carnets », ou installer le nouveau raccourci depuis ce lien dans Safari. Ne pas effacer le stockage ni désinstaller un ancien raccourci avant d’avoir vérifié la synchronisation et exporté ses données locales.
+
+Au démarrage et au retour au premier plan, lecture explicite du serveur puis abonnement temps réel. Les instantanés provenant uniquement du cache et les écritures non confirmées ne remplacent pas les carnets. Les erreurs apparaissent dans une zone de récupération sans bandeau Firebase permanent. Les valeurs locales absentes du serveur sont ajoutées sans remplacer des documents existants, y compris les tombstones ; les modifications en attente sont persistées par espace. Des copies locales de récupération sont conservées avant l’application d’un instantané serveur. Les règles Firestore ne sont pas modifiées.
+
+Le service worker ne conserve que l’interface, exclut les API et garde une version commune de l’interface pour les routes privées. Aucun cache de données utilisateur n’est supprimé.
+
+Validation : `node tests/sync.cjs` (identités distinctes, stockage isolé, lancement du manifeste, erreurs serveur, cache vide, reprise, édition en attente). Aucun test ne modifie Firestore en production.

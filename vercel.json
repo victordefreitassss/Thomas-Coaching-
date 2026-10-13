@@ -22,6 +22,34 @@
           "value": "no-cache"
         }
       ]
+    },
+    {
+      "source": "/app/:room",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        }
+      ]
+    },
+    {
+      "source": "/:asset(workspace.js|firebase-sync.js|sync-core.js|manifest.webmanifest)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/app/:room",
+      "destination": "/index.html"
     }
   ]
 }
