@@ -18,8 +18,8 @@ const firstKey='4|upper-a|smith-decline|1',entries={
  '4|upper-a|smith-decline|3':{kg:'',reps:'8'}
 };
 assert.deepEqual([...core.NatifSyncCore.autofillSets(entries,firstKey,3)],['4|upper-a|smith-decline|2','4|upper-a|smith-decline|3']);
-assert.deepEqual(entries['4|upper-a|smith-decline|2'],{kg:'70',reps:'10'});
-assert.deepEqual(entries['4|upper-a|smith-decline|3'],{kg:'75',reps:'8'});
+assert.deepEqual(entries['4|upper-a|smith-decline|2'],{kg:'75',reps:'10'});
+assert.deepEqual(entries['4|upper-a|smith-decline|3'],{kg:'75',reps:'10'});
 assert.deepEqual([...core.NatifSyncCore.autofillSets(entries,firstKey,3)],[]);
 assert.deepEqual([...core.NatifSyncCore.autofillSets(entries,'4|upper-a|smith-decline|2',3)],[]);
 const sync=fs.readFileSync(require.resolve('../firebase-sync.js'),'utf8').replace(/^import .*;\n/gm,'');

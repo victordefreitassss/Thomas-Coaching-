@@ -34,7 +34,7 @@
     for(let set=2;set<=setCount;set++){
       const key=[...parts.slice(0,3),String(set)].join('|'),current=entries[key]||{};
       let updated=false;
-      for(const field of ['kg','reps'])if(current[field]===undefined||current[field]===''){current[field]=source[field];updated=true;}
+      for(const field of ['kg','reps'])if(current[field]!==source[field]){current[field]=source[field];updated=true;}
       if(updated){entries[key]=current;changed.push(key);}
     }
     return changed;
