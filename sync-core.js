@@ -1,6 +1,6 @@
 /* Small pure helpers: one Firestore document per editable scalar. */
 (function(root){
-  const people=['Thomas','Pierre'], maps=['entries','targets','done','dates','bodyweights'];
+  const people=['Thomas','Pierre'], maps=['entries','targets','done','dates','bodyweights','choices'];
   function flatten(data){
     const out={};
     for(const p of people){

@@ -5,8 +5,8 @@ const programSource=html.slice(html.indexOf('const PLAN='),html.indexOf("const S
 const program={};vm.runInNewContext(programSource+';result=PLAN;',program);
 const upperB=program.result.sessions.find(session=>session.id==='upper-b');
 const firstFor=person=>upperB.blocks[0].items.filter(ex=>!ex.for||ex.for===person);
-assert.equal(firstFor('Pierre')[0].id,'smith-incline');
-assert.equal(firstFor('Pierre')[0].name,'Développé incliné à la Smith machine');
+assert.deepEqual(Array.from(firstFor('Pierre'),ex=>ex.id),['chest-incline','smith-incline']);
+assert.deepEqual(Array.from(firstFor('Pierre'),ex=>ex.choiceValue),['chest','smith']);
 assert.equal(firstFor('Thomas')[0].id,'chest-incline');
 const weightSource=html.match(/function weightFor1RM[^\n]+/)[0],weight={store:{Pierre:{bodyweights:{},bw:''}}};
 vm.runInNewContext(weightSource+";added=result=weightFor1RM('Pierre',{loadType:'added'},0,1);plain=weightFor1RM('Pierre',{},0,1);",weight);
@@ -34,8 +34,8 @@ assert.deepEqual(entries['4|upper-a|smith-decline|3'],{kg:'75',reps:'10'});
 assert.deepEqual([...core.NatifSyncCore.autofillSets(entries,firstKey,3)],[]);
 assert.deepEqual([...core.NatifSyncCore.autofillSets(entries,'4|upper-a|smith-decline|2',3)],[]);
 const sync=fs.readFileSync(require.resolve('../firebase-sync.js'),'utf8').replace(/^import .*;\n/gm,'');
-const fresh=()=>({Thomas:{entries:{},targets:{},done:{},dates:{},bodyweights:{},bw:'',weekCount:12},Pierre:{entries:{},targets:{},done:{},dates:{},bodyweights:{},bw:'',weekCount:12}});
-const data=()=>{const d=fresh();d.Thomas.entries.a={kg:'40',reps:'10'};return d;};
+const fresh=()=>({Thomas:{entries:{},targets:{},done:{},dates:{},bodyweights:{},choices:{},bw:'',weekCount:12},Pierre:{entries:{},targets:{},done:{},dates:{},bodyweights:{},choices:{},bw:'',weekCount:12}});
+const data=()=>{const d=fresh();d.Thomas.entries.a={kg:'40',reps:'10'};d.Pierre.choices['4|upper-b|upper-b-press']='smith';return d;};
 const records=Object.entries(core.NatifSyncCore.flatten(data())).map(([path,value])=>({data:()=>({path,value,deleted:false})}));
 const snap={size:records.length,metadata:{fromCache:false,hasPendingWrites:false},forEach:cb=>records.forEach(cb)};
 function client(uid,fail=false){
