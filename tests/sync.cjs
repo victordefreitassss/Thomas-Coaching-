@@ -1,5 +1,16 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const {resolve}=require('../workspace.js'),manifest=require('../api/manifest.js');
+const html=fs.readFileSync(require.resolve('../index.html'),'utf8');
+const programSource=html.slice(html.indexOf('const PLAN='),html.indexOf("const STORAGE_KEY="));
+const program={};vm.runInNewContext(programSource+';result=PLAN;',program);
+const upperB=program.result.sessions.find(session=>session.id==='upper-b');
+const firstFor=person=>upperB.blocks[0].items.filter(ex=>!ex.for||ex.for===person);
+assert.equal(firstFor('Pierre')[0].id,'smith-incline');
+assert.equal(firstFor('Pierre')[0].name,'Développé incliné à la Smith machine');
+assert.equal(firstFor('Thomas')[0].id,'chest-incline');
+const weightSource=html.match(/function weightFor1RM[^\n]+/)[0],weight={store:{Pierre:{bodyweights:{},bw:''}}};
+vm.runInNewContext(weightSource+";added=result=weightFor1RM('Pierre',{loadType:'added'},0,1);plain=weightFor1RM('Pierre',{},0,1);",weight);
+assert.equal(weight.added,0);assert.equal(weight.plain,null);
 const room='A'.repeat(32),other='B'.repeat(32);
 assert.equal(resolve('https://app.test/app/'+room,null),room);
 assert.equal(resolve('https://app.test/#espace='+room,other),room);
