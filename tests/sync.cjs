@@ -12,6 +12,16 @@ manifest({url:'/api/manifest?espace='+room},res);let m=JSON.parse(res.body);
 assert.equal(resolve('https://app.test'+m.start_url,null),room);assert.equal(m.scope,'/');assert.match(headers['Cache-Control'],/no-store/);
 manifest({url:'/api/manifest?espace=bad'},res);assert.equal(res.statusCode,400);
 const core={};vm.runInNewContext(fs.readFileSync(require.resolve('../sync-core.js'),'utf8'),{window:core});
+const firstKey='4|upper-a|smith-decline|1',entries={
+ [firstKey]:{kg:'75',reps:'10'},
+ '4|upper-a|smith-decline|2':{kg:'70',reps:''},
+ '4|upper-a|smith-decline|3':{kg:'',reps:'8'}
+};
+assert.deepEqual([...core.NatifSyncCore.autofillSets(entries,firstKey,3)],['4|upper-a|smith-decline|2','4|upper-a|smith-decline|3']);
+assert.deepEqual(entries['4|upper-a|smith-decline|2'],{kg:'70',reps:'10'});
+assert.deepEqual(entries['4|upper-a|smith-decline|3'],{kg:'75',reps:'8'});
+assert.deepEqual([...core.NatifSyncCore.autofillSets(entries,firstKey,3)],[]);
+assert.deepEqual([...core.NatifSyncCore.autofillSets(entries,'4|upper-a|smith-decline|2',3)],[]);
 const sync=fs.readFileSync(require.resolve('../firebase-sync.js'),'utf8').replace(/^import .*;\n/gm,'');
 const fresh=()=>({Thomas:{entries:{},targets:{},done:{},dates:{},bodyweights:{},bw:'',weekCount:12},Pierre:{entries:{},targets:{},done:{},dates:{},bodyweights:{},bw:'',weekCount:12}});
 const data=()=>{const d=fresh();d.Thomas.entries.a={kg:'40',reps:'10'};return d;};

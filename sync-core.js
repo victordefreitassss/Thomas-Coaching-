@@ -25,5 +25,19 @@
     }else {if(parts.length!==3)throw Error('Invalid path');if(deleted)delete data[p][m][key];else data[p][m][key]=JSON.parse(value);}
   }
   function diff(before,after){const out={};for(const path of new Set([...Object.keys(before),...Object.keys(after)]))if(before[path]!==after[path])out[path]={value:after[path]??'null',deleted:after[path]===undefined};return out;}
-  const api={flatten,apply,diff};if(typeof module!=='undefined')module.exports=api;else root.NatifSyncCore=api;
+  function autofillSets(entries,firstKey,setCount){
+    const parts=firstKey.split('|');
+    if(parts.length!==4||parts[3]!=='1'||setCount<2)return [];
+    const source=entries[firstKey]||{};
+    if(source.kg===undefined||source.kg===''||source.reps===undefined||source.reps==='')return [];
+    const changed=[];
+    for(let set=2;set<=setCount;set++){
+      const key=[...parts.slice(0,3),String(set)].join('|'),current=entries[key]||{};
+      let updated=false;
+      for(const field of ['kg','reps'])if(current[field]===undefined||current[field]===''){current[field]=source[field];updated=true;}
+      if(updated){entries[key]=current;changed.push(key);}
+    }
+    return changed;
+  }
+  const api={flatten,apply,diff,autofillSets};if(typeof module!=='undefined')module.exports=api;else root.NatifSyncCore=api;
 })(typeof window!=='undefined'?window:globalThis);
