@@ -8,6 +8,11 @@ const firstFor=person=>upperB.blocks[0].items.filter(ex=>!ex.for||ex.for===perso
 assert.deepEqual(Array.from(firstFor('Pierre'),ex=>ex.id),['chest-incline','smith-incline']);
 assert.deepEqual(Array.from(firstFor('Pierre'),ex=>ex.choiceValue),['chest','smith']);
 assert.equal(firstFor('Thomas')[0].id,'chest-incline');
+const arms=program.result.sessions.find(session=>session.id==='arms');
+const shoulderFor=person=>arms.blocks[0].items.filter(ex=>(!ex.for||ex.for===person)&&ex.id.startsWith('shoulder-press'));
+assert.deepEqual(Array.from(shoulderFor('Pierre'),ex=>ex.name),['Shoulder press machine (Natif Body)','Shoulder press machine']);
+assert.deepEqual(Array.from(shoulderFor('Pierre'),ex=>ex.choiceValue),['natif-body','other']);
+assert.equal(shoulderFor('Thomas')[0].name,'Shoulder press machine');
 const weightSource=html.match(/function weightFor1RM[^\n]+/)[0],weight={store:{Pierre:{bodyweights:{},bw:''}}};
 vm.runInNewContext(weightSource+";added=result=weightFor1RM('Pierre',{loadType:'added'},0,1);plain=weightFor1RM('Pierre',{},0,1);",weight);
 assert.equal(weight.added,0);assert.equal(weight.plain,null);
@@ -31,6 +36,10 @@ const firstKey='4|upper-a|smith-decline|1',entries={
 assert.deepEqual([...core.NatifSyncCore.autofillSets(entries,firstKey,3)],['4|upper-a|smith-decline|2','4|upper-a|smith-decline|3']);
 assert.deepEqual(entries['4|upper-a|smith-decline|2'],{kg:'75',reps:'10'});
 assert.deepEqual(entries['4|upper-a|smith-decline|3'],{kg:'75',reps:'10'});
+entries[firstKey].reps='12';
+assert.deepEqual([...core.NatifSyncCore.autofillSets(entries,firstKey,3)],['4|upper-a|smith-decline|2','4|upper-a|smith-decline|3']);
+assert.equal(entries['4|upper-a|smith-decline|2'].reps,'12');
+assert.equal(entries['4|upper-a|smith-decline|3'].reps,'12');
 assert.deepEqual([...core.NatifSyncCore.autofillSets(entries,firstKey,3)],[]);
 assert.deepEqual([...core.NatifSyncCore.autofillSets(entries,'4|upper-a|smith-decline|2',3)],[]);
 const sync=fs.readFileSync(require.resolve('../firebase-sync.js'),'utf8').replace(/^import .*;\n/gm,'');
